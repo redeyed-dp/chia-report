@@ -1,0 +1,8 @@
+venv
+.idea
+__pycache__
+*/__pycache__
+
+cache.db
+scan.log
+hosts.txt
