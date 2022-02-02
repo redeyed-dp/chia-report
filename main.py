@@ -127,7 +127,7 @@ while True:
         if len(ssh_errors):
             rescan()
         else:
-            print(Fore.RED + "Нет серверов для повторного сканирования" + Style.RESET_ALL)
+            print(Fore.RED + "Нет серверов для повторного сканирования")
     elif a == 't':
         pass
     else:
