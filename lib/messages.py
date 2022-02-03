@@ -26,9 +26,9 @@ class Message():
 
     def menu(self, hotkey=None, text=None):
         if hotkey:
-            print(Fore.CYAN + f" {hotkey} " + Style.RESET_ALL + " - f{text}")
+            print(Fore.CYAN + f" {hotkey} " + Style.RESET_ALL + f" - {text}")
         else:
-            print()
+            print(Fore.CYAN + f"      {text}")
 
     def input(self):
         a = input(Fore.CYAN + ">>> ").lower()
