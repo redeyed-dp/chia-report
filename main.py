@@ -1,6 +1,6 @@
 import logging
+from lib.reports import Inventory
 from lib.messages import Message
-from colorama import Fore, Style
 from lib.parsers import hosts, Lsblk, Df, Lshw, Blkid, Etcfstab, Search
 from lib.farmers import Flexpool, Hpool
 from lib.ssh import SshConn
@@ -107,28 +107,32 @@ def rescan():
 
 complete = False
 while True:
-    print(Fore.CYAN + "Выберите действие:")
+    m.menu(text="Выберите действие:")
     if not complete:
-        print(Fore.CYAN + " a" + Style.RESET_ALL + " - Сканировать все сервера")
+        m.menu("a", "Сканировать все сервера")
     if len(ssh_errors):
-        print(Fore.CYAN + " r" + Style.RESET_ALL + " - Повторно сканировать сбойные сервера")
+        m.menu("s", "Повторно сканировать сбойные сервера")
     if complete:
-        print(Fore.CYAN + " t" + Style.RESET_ALL + " - Вывести отчет в терминал")
-    print(Fore.CYAN + " q " + Style.RESET_ALL + "- Выйти")
+        m.menu("r", "Вывести отчет в терминал")
+    m.menu("q", "Выйти")
 
-    a = input(Fore.CYAN + ">>> ").lower()
-    print(Style.RESET_ALL)
+    a = m.input()
     if a == 'q':
         break
     elif a == 'a':
         scan_all()
         complete = True
+    elif a == 's' and len(ssh_errors):
+        rescan()
     elif a == 'r':
-        if len(ssh_errors):
-            rescan()
-        else:
-            print(Fore.RED + "Нет серверов для повторного сканирования")
-    elif a == 't':
-        pass
+        m.menu(text="Выберите отчет:")
+        m.menu("i", "Инвентаризация жестких дисков")
+        m.menu("e", "Ошибки конфигурации")
+        a = m.input()
+        if a == "i":
+            report = Inventory()
+            report.report()
+        elif a == "e":
+            pass
     else:
-        print(Fore.RED + f"Неверная опция {a}")
+        m.warning(f"Неверная опция {a}")

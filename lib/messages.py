@@ -19,7 +19,21 @@ class Message():
         self.offset = self.width - len(message)
 
     def ok(self):
-        print (Fore.GREEN + "OK".rjust(self.offset))
+        print(Fore.GREEN + "OK".rjust(self.offset))
 
     def error(self):
         print(Fore.RED + "ERROR".rjust(self.offset))
+
+    def menu(self, hotkey=None, text=None):
+        if hotkey:
+            print(Fore.CYAN + f" {hotkey} " + Style.RESET_ALL + " - f{text}")
+        else:
+            print()
+
+    def input(self):
+        a = input(Fore.CYAN + ">>> ").lower()
+        print(Style.RESET_ALL)
+        return a
+
+    def warning(self, text):
+        print(Fore.RED + text)
