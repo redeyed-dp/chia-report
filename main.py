@@ -1,5 +1,5 @@
 import logging
-from lib.reports import Inventory
+from lib.reports import Report
 from lib.messages import Message
 from lib.parsers import hosts, Lsblk, Df, Lshw, Blkid, Etcfstab, Search
 from lib.farmers import Flexpool, Hpool
@@ -113,7 +113,9 @@ while True:
     if len(ssh_errors):
         m.menu("s", "Повторно сканировать сбойные сервера")
     if complete:
-        m.menu("r", "Вывести отчет в терминал")
+        m.menu("r", "Сформировать отчет")
+    elif Report.cache_exists:
+        m.menu("r", "Сформировать отчет из кеша")
     m.menu("q", "Выйти")
 
     a = m.input()
@@ -129,10 +131,14 @@ while True:
         m.menu("i", "Инвентаризация жестких дисков")
         m.menu("e", "Ошибки конфигурации")
         a = m.input()
+        report = Report()
         if a == "i":
-            report = Inventory()
-            report.report()
+            m.task("Формирую отчет...")
+            report.inventory()
+            m.ok()
         elif a == "e":
-            pass
+            m.task("Формирую отчет...")
+            report.bugs()
+            m.ok()
     else:
         m.warning(f"Неверная опция {a}")

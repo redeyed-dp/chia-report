@@ -32,7 +32,7 @@ class Message():
 
     def input(self):
         a = input(Fore.CYAN + ">>> ").lower()
-        print(Style.RESET_ALL)
+        print(Style.RESET_ALL, end='')
         return a
 
     def warning(self, text):
