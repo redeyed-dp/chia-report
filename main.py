@@ -130,6 +130,7 @@ while True:
         m.menu(text="Выберите отчет:")
         m.menu("i", "Инвентаризация жестких дисков")
         m.menu("e", "Ошибки конфигурации")
+        m.menu("u", "Использование дискового пространства")
         a = m.input()
         report = Report()
         if a == "i":
@@ -139,6 +140,10 @@ while True:
         elif a == "e":
             m.task("Формирую отчет...")
             report.bugs()
+            m.ok()
+        elif a == "u":
+            m.task("Формирую отчет...")
+            report.usage()
             m.ok()
     else:
         m.warning(f"Неверная опция {a}")

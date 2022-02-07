@@ -1,6 +1,7 @@
 from lib.models import session, Disk, Partition, Fstab, Directory, Pool
 from lib.parsers import hosts
 import os
+from datetime import datetime
 import openpyxl
 from openpyxl.styles import PatternFill
 from openpyxl.utils.cell import get_column_letter
@@ -51,6 +52,9 @@ class Report():
         section.bottom_margin = Cm(2.0)
         section.left_margin = Cm(2.0)
         section.right_margin = Cm(2.0)
+        # Header
+        d = datetime.now()
+        section.header.add_paragraph(f'Отчет сформирован {d.year}.{d.month}.{d.day} в {d.hour}:{d.minute}')
         for ip in self.hosts:
             doc.add_heading(f"{self.hosts[ip].upper()} ({ip})", 0)
             disks = session.query(Disk).filter(Disk.ip==ip).count()
@@ -117,6 +121,33 @@ class Report():
                     else:
                         doc.add_heading("Фермер flexpool сконфигурирован правильно")
         doc.save('reports/Ошибки конфигурации.docx')
+
+    def usage(self):
+        doc = docx.Document()
+        style = doc.styles['Normal']
+        font = style.font
+        font.name = 'Arial'
+        font.size = Pt(8)
+        section = doc.sections[-1]
+        # Header
+        d = datetime.now()
+        section.header.add_paragraph(f'Отчет сформирован {d.year}.{d.month}.{d.day} в {d.hour}:{d.minute}')
+        for ip in self.hosts:
+            doc.add_heading(f"{self.hosts[ip].upper()} ({ip})", 0)
+            partitions = session.query(Partition).outerjoin(Disk).filter(Disk.ip==ip).all()
+            hdr = ('Имя', 'Точка монтирования', 'Объем', 'Использовано', 'Доступно', '%')
+            table = doc.add_table(rows=len(partitions)+1, cols=len(hdr))
+            for j, h in enumerate(hdr):
+                cell = table.cell(0, j)
+                cell.text = h
+                cell.paragraphs[0].runs[0].font.bold = True
+            for i, part in enumerate(partitions):
+                for j, attr in enumerate(('name', 'mountpoint', 'size', 'used', 'available')):
+                    cell = table.cell(i+1, j)
+                    cell.text = getattr(part, attr) or ''
+                cell = table.cell(i+1, 5)
+                cell.text = f"{part.usage}%" if part.usage else ''
+        doc.save('reports/Использование дискового пространства.docx')
 
     @property
     def cache_exists(self):
